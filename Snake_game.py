@@ -48,7 +48,7 @@ class Player:
         if self.updateCount > self.updateCountMax:
 
             for i in range(self.length - 1, 0, -1):
-                print("self.x[" + str(i) + "] = self[" + str(i-1) + "]")
+                #print("self.x[" + str(i) + "] = self[" + str(i-1) + "]")
                 self.x[i] = self.x[i-1]
                 self.y[i] = self.y[i-1]
 
@@ -114,7 +114,6 @@ class Window:
         self.highscore = int(self.highscore)
         self.score = 0
         self.clock = pygame.time.Clock()
-        self.pause = 0
         self.gui = gui
 
     def on_init(self):
@@ -128,6 +127,9 @@ class Window:
     def on_event(self, event):
         if event.type == QUIT:
             self.running = False
+
+    def generate_observations(self):
+        return self.done, self.score, self.snake, self.food
 
     def text_to_screen(self, text, color, pos):
         font = pygame.font.SysFont('Arial', 30)
@@ -160,15 +162,17 @@ class Window:
         # does snake collide with itself?
         for i in range(2, self.player.length):
             if self.game.isCollision(self.player.x[0], self.player.y[0], self.player.x[i], self.player.y[i]):
-                print("Collision: ")
-                print("x[0] (" + str(self.player.x[0]) + "," + str(self.player.y[0]) + ")")
-                print("x[" + str(i) + "] (" + str(self.player.x[i]) + "," + str(self.player.y[i]) + ")")
+                print("Collision with body ")
+                print("You got: " + str(self.score) + " points")
+                #print("x[0] (" + str(self.player.x[0]) + "," + str(self.player.y[0]) + ")")
+                #print("x[" + str(i) + "] (" + str(self.player.x[i]) + "," + str(self.player.y[i]) + ")")
                 exit(0)
 
         if self.game.wallCollision(self.player.x[0], self.player.y[0], self.windowWidth, self.windowHeight):
-            print("Collision: ")
-            print("x[0] (" + str(self.player.x[0]) + "," + str(self.player.y[0]) + ")")
-            print("x[" + str(i) + "] (" + str(self.player.x[i]) + "," + str(self.player.y[i]) + ")")
+            print("Collision with wall ")
+            print("You got: " + str(self.score) + " points")
+            #print("x[0] (" + str(self.player.x[0]) + "," + str(self.player.y[0]) + ")")
+            #print("x[" + str(i) + "] (" + str(self.player.x[i]) + "," + str(self.player.y[i]) + ")")
             exit(0)
 
         pass
@@ -189,7 +193,7 @@ class Window:
         if self.on_init() == False:
             self.running = False
 
-        while(self.running):
+        while self.running:
             if self.gui:
                 pygame.event.pump()
                 keys = pygame.key.get_pressed()
@@ -209,16 +213,9 @@ class Window:
                 if keys[K_ESCAPE]:
                     self.running = False
 
-                if keys[K_p]:
-                    if self.pause == 0:
-                        self.pause = 1000
-                    elif self.pause > 0:
-                        self.pause = 0
-
             self.on_loop()
             self.on_render()
-            self.clock.tick(15)
-            time.sleep(self.pause)
+            self.clock.tick(60)
         self.on_cleanup()
 
 
