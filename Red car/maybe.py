@@ -47,15 +47,15 @@ class GameObject:
 #Steer.
     def steerleft(self):
         self.turn = self.turn+self.steering
-        if self.turn > 360.0:
-            self.turn = 0.0
+        if self.turn > 360:
+            self.turn = 0
         self.sprite.rotation(self.turn)
 
 #Steer.
     def steerright(self):
         self.turn = self.turn-self.steering
-        if self.turn < 0.0:
-            self.turn = 360.0
+        if self.turn < 0:
+            self.turn = 360
         self.sprite.rotation(self.turn)
 
 #fix this function

@@ -21,14 +21,19 @@ class GameObject:
         self.sprite.draw()
 
     def update(self, dt):
-        self.posx += dt * math.cos(math.radians(270 - self.rotate))
-        self.posy += dt * math.sin(math.radians(270 - self.rotate))
+        #self.posx += dt * math.cos(math.radians(270 - self.rotate))
+        #self.posy += dt * math.sin(math.radians(270 - self.rotate))
 
-        #self.posx += self.velx * dt
-        #self.posy += self.vely * dt
+        self.posx += self.velx * dt
+        self.posy += self.vely * dt
         self.sprite.x = self.posx
         self.sprite.y = self.posy
-        #self.sprite.rotation += self.rotate
+        self.sprite.rotation += self.rotate
+        if self.sprite.rotation > 360:
+            self.sprite.rotation = 0
+
+        if self.sprite.rotation < 0:
+            self.sprite.rotation = 360
 
 
 

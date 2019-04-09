@@ -16,13 +16,6 @@ class GameWindow(pyglet.window.Window): #Basically Game Class where things are d
         self.fps_display = FPSDisplay(self)
         glClearColor(0.3, 0.3, 0.3, 1.0)
 
-        self.right = False
-        self.left = False
-        self.up = False
-        self.down = False
-        self.player_speed = 100
-
-
         #self.player = GameObject(600, 400, 'red_car.png', scale=0.03) #This does what is below bascially
         self.player = thistime.Car(self.width, self.height)
         #image = pyglet.image.load('res/sprites/red_car.png')
@@ -33,24 +26,19 @@ class GameWindow(pyglet.window.Window): #Basically Game Class where things are d
 
     def on_key_press(self, symbol, modifiers): #Key events
         if symbol == key.RIGHT:
-            self.right = True
+            self.player.steerright()
+
         if symbol == key.LEFT:
-            self.left = True
+            self.player.steerleft()
         if symbol == key.UP:
-            self.up = True
+            self.player.accelerate()
         if symbol == key.DOWN:
-            self.down = True
+            self.player.deaccelerate()
+
+        #elif symbol != key.UP and symbol != key.DOWN:
+            #self.player.soften()
 
     def on_key_release(self, symbol, modifiers): #Key events
-        if symbol == key.RIGHT:
-            self.right = False
-        if symbol == key.LEFT:
-            self.left = False
-        if symbol == key.UP:
-            self.up = False
-        if symbol == key.DOWN:
-            self.down = False
-
         if symbol == key.ESCAPE:
             pyglet.app.exit()
 
@@ -61,27 +49,8 @@ class GameWindow(pyglet.window.Window): #Basically Game Class where things are d
         self.fps_display.draw()
 
     def update(self, dt):
-        self.update_player(dt)
+        self.player.update(dt)
 
-    def update_player(self, dt):
-        self.player.update() #calls a function from GameObject to move the player sprite
-
-        if self.right:
-            self.player.steerright()
-
-        if self.left:
-            self.player.steerleft()
-
-        if self.up:
-            self.player.accelerate()
-            #self.player.vely += self.player_speed * dt
-
-        if self.down:
-            self.player.deaccelerate()
-            #self.player.vely -= self.player_speed * dt
-
-        elif not self.up and not self.down:
-            self.player.soften()
 
 if __name__ == "__main__": #runs the game
     window = GameWindow(1200, 800, "Red Car", resizable=False) #Makes the window object
