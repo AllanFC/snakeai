@@ -1,51 +1,69 @@
 import pyglet, math
+from pyglet.gl import *
+
+
+class Map:
+    def __init__(self, x, y):
+        self.x = int(x)
+        self.y = int(y)
+        self.line = pyglet.graphics.vertex_list(2, ('v2i', self.x), ('c3B', self.y))
+
+        # self.x = x
+        # self.y = y
+        # self.lines = []
+        # self.batch = pyglet.graphics.Batch()
+
+
+    # def map(self):
+    #     for x in self.coordinate_x:
+    #         for y in self.coordinate_y:
+    #             self.batch = self.batch.add(glVertex2f(x, y))
+
 
 
 class Car:
-    def __init__(self, size_x, size_y):
-        self.size_x = size_x
-        self.size_y = size_y
-        self.posx = self.size_x / 2
-        self.posy = self.size_y / 2
+    def __init__(self, screen_w, screen_h):
+        self.screen_w = screen_w
+        self.screen_h = screen_h
+        self.posx = self.screen_w / 2
+        self.posy = self.screen_h / 2
         self.dir = 0
         self.turn = 0
         self.speed = 0.0
-        self.maxspeed = 11.0
-        self.minspeed = -1.5
+        self.maxspeed = 3
+        self.minspeed = -2
         self.acceleration = 0.1
-        self.deacceleration = 0.12
-        self.softening = 0.04
+        self.deacceleration = 0.1
+        self.softening = 0.03
         self.steering = 1.6
         self.image = pyglet.image.load('res/sprites/red_car.png')
         self.image.anchor_x = self.image.width // 2
         self.image.anchor_y = self.image.height // 2
         self.sprite = pyglet.sprite.Sprite(self.image, x=self.posx, y=self.posy)
-        self.sprite.scale = 0.03
+        self.sprite.scale = 0.02
+
+    def lines(self):
+        glBegin(GL_LINES)
+
+        # front
+        glVertex2f((self.posx - self.sprite.width / 2), (self.posy + self.sprite.height / 2))
+        glVertex2f((self.posx + self.sprite.width / 2), (self.posy + self.sprite.height / 2))
+        # right
+        glVertex2f((self.posx + self.sprite.width / 2), (self.posy + self.sprite.height / 2))
+        glVertex2f((self.posx + self.sprite.width / 2), (self.posy - self.sprite.height / 2))
+        # left
+        glVertex2f((self.posx - self.sprite.width / 2), (self.posy + self.sprite.height / 2))
+        glVertex2f((self.posx - self.sprite.width / 2), (self.posy - self.sprite.height / 2))
+        # back
+        glVertex2f((self.posx - self.sprite.width / 2), (self.posy - self.sprite.height / 2))
+        glVertex2f((self.posx + self.sprite.width / 2), (self.posy - self.sprite.height / 2))
+
+        glEnd()
 
 
-        """
-        pyglet.sprite.Sprite.__init__(self)
-        self.image = load_image('car_player.png')
-        self.rect = self.image.get_rect()
-        self.image_orig = self.image
-        self.screen = pygame.display.get_surface()
-        self.area = self.screen.get_rect()
-        CENTER_X = int(pygame.display.Info().current_w / 2)
-        CENTER_Y = int(pygame.display.Info().current_h / 2)
-        self.x = CENTER_X
-        self.y = CENTER_Y
-        self.rect.topleft = self.x, self.y
-        self.x, self.y = findspawn()
-        self.dir = 0
-        self.speed = 0.0
-        self.maxspeed = 11.5
-        self.minspeed = -1.85
-        self.acceleration = 0.095
-        self.deacceleration = 0.12
-        self.softening = 0.04
-        self.steering = 1.60
-        self.tracks = False
-        """
+    def distance(self):
+        pass
+
 
     # Reset the car.
     def reset(self):
@@ -60,6 +78,8 @@ class Car:
             self.speed -= self.softening
         if self.speed < 0:
             self.speed += self.softening
+        if 0.05 > self.speed > -0.5:
+            self.speed = round(self.speed)
 
     # Accelerate the vehicle
     def accelerate(self):
@@ -75,21 +95,22 @@ class Car:
 
     # Steer.
     def steerleft(self):
-        self.dir = self.dir + self.steering
-        if self.dir > 360:
-            self.dir = 0
-        #self.image, self.rect = rot_center(self.image_orig, self.rect, self.dir)
+        if self.speed > 0.9 or self.speed < -0.9:
+            self.dir = self.dir + self.steering
+            if self.dir > 360:
+                self.dir = 0
 
     # Steer.
     def steerright(self):
-        self.dir = self.dir - self.steering
-        if self.dir < 0:
-            self.dir = 360
-        #self.image, self.rect = rot_center(self.image_orig, self.rect, self.dir)
+        if self.speed > 0.9 or self.speed < -0.9:
+            self.dir = self.dir - self.steering
+            if self.dir < 0:
+                self.dir = 360
 
     def draw(self):
         self.sprite.rotation = self.dir
         self.sprite.draw()
+        self.lines()
 
     # fix this function
     def update(self):
@@ -97,5 +118,7 @@ class Car:
         self.posy = self.posy - self.speed * math.sin(math.radians(270 - self.dir))
         self.sprite.x = self.posx
         self.sprite.y = self.posy
+        self.lines()
+        #self.distance()
 
 
